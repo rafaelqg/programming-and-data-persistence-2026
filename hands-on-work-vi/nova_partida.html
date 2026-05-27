@@ -1,0 +1,51 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Registro de nova partida</h1>
+        <form>
+            Data inicio:<br />
+            <input name="data_inicio" type="date" />
+            <input name="hora_inicio" type="time" />
+            <br /><br />
+
+            Data fim:<br />
+            <input name="data_fim" type="date" />
+            <input name="hora_fim" type="time" />
+            <br /><br />
+            
+            Jogador 1:<br />
+            <select name="jogador_1">
+                <option value="">
+                    --Selecione o Jogador 1 --
+                </option>
+                <option value="1">João</option>
+            </select>
+            <input type="radio" name="vencedor" value="1"> Vencedor
+          
+            <br /><br />
+            Jogador 2:<br />
+            <select name="jogador_2">
+                <option value="">
+                    --Selecione o Jogador 2 --
+                </option>
+                <option value="2">Maria</option>
+            </select>
+            <input type="radio" name="vencedor" value="2"> Vencedor
+
+            <br /><br />
+            Jogo:<br />
+            <select name="jogo">
+                <option value="">--Selecione o Jogo --</option>
+            </select>
+
+            <br /><br />
+            Formato:<br />
+            <select name="formato">
+                <option value="">--Selecione o formato da partida --</option>
+            </select>
+            <br /><br />
+            <input type="submit" value="Salvar partida" />
+        </form>
+    </body>
+</html>
