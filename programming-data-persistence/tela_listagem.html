@@ -1,0 +1,54 @@
+<html>
+<head>
+    <title>Listagem de Clientes</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+        }
+    </style>
+    <script>
+        function carregaDadosClientes() {
+
+            let httpRequest= new XMLHttpRequest();
+            httpRequest.onreadystatechange = handleRequestContactsData;
+            httpRequest.open("GET","http://localhost:4333/total_pagamentos_clientes", true);
+            httpRequest.send();
+
+            function handleRequestContactsData() {
+                if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                    if (httpRequest.status === 200) {
+                        let clientes = JSON.parse(httpRequest.responseText);
+                        let table = document.getElementById("clientes-table");
+                        for (let cliente of clientes) {
+                            let row = table.insertRow();
+                            let cellId = row.insertCell(0);
+                            let cellNome = row.insertCell(1);
+                            let cellTotal = row.insertCell(2);
+                            cellId.innerHTML = cliente.customer_id;
+                            cellNome.innerHTML = cliente.first_name + " " + cliente.last_name;
+                            cellTotal.innerHTML = cliente.total;
+                        }
+                    } else {
+                        console.error("Erro ao carregar os dados dos clientes: " + httpRequest.status);
+                    }
+                }
+             }
+        }
+    </script>
+</head> 
+<body onload="carregaDadosClientes()">
+    <h1>Listagem de Clientes</h1>
+    <table id="clientes-table">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Total em Pagamentos</th>
+        </tr>
+        <!-- Aqui serão inseridos os dados dos clientes -->
+    </table>
+</body>
+</html>

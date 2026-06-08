@@ -1,5 +1,16 @@
 
 const mysql = require('mysql2');
+const express = require('express');
+const bodyParser = require('body-parser'); // npm install body-parser
+
+//objects to handle POST message body
+const jsonParser = bodyParser.json() // create application/json parser
+const urlencodedParser = bodyParser.urlencoded({ extended: false }) // create application/x-www-form-urlencoded parser
+
+
+//initiate http server (express)
+const app = express();
+app.listen(4333);
 
 //initialize mysql connection
 const MYSQL_IP="localhost";
@@ -24,8 +35,7 @@ con.connect(
         //exibePagamentosPorAno(con, 2006);
         //exibeTotalPagamentosPorCliente(con);
         //atualizaValorPagamento(con, 20, 6.99);
-
-        inserePagamento(con, 6, 39, 1, 1, 6.99);
+        //inserePagamento(con, 6, 39, 1, 1, 6.99);
 
     }
 );
@@ -56,6 +66,27 @@ function exibeTotalPagamentosPorCliente(connection) {
     });
 }
 
+
+app.get('/total_pagamentos_clientes', function (request, response) {
+    let sql = `
+     SELECT c.customer_id, c.first_name, c.last_name, sum(amount) as total
+     FROM sakila.payment p
+     inner join customer c on p.customer_id = c.customer_id
+     group by customer_id;`;
+    console.log("Executando query: " + sql);
+    con.query(sql,[], function (err, result) {
+        if (err) throw err;
+        const resultJSON = JSON.stringify(result);
+        addCorsHttpHeaders(response);
+        response.status(200);
+        response.setHeader('Content-Type', 'application/json');
+        response.send(resultJSON);
+    
+    });
+ 
+});
+
+
 function atualizaValorPagamento(connection, payment_id, valor) {
     let sql = "UPDATE payment SET amount = ? WHERE payment_id = ?;";
     connection.query(sql, [valor, payment_id], function (err, result) {
@@ -66,6 +97,12 @@ function atualizaValorPagamento(connection, payment_id, valor) {
         console.log("DEBUG", result);
     });
 }
+
+app.post('/insere_pagamento', urlencodedParser, function (request, response) {
+    inserePagamento(con, request.body.customer_id, request.body.film_id, request.body.staff_id, request.body.store_id, request.body.amount);
+    response.status(200);
+    response.send();
+}); 
 
 /**
  * Insere um novo pagamento na base de dados
@@ -106,6 +143,14 @@ function inserePagamento(connection, customer_id, film_id, staff_id, store_id, a
             });
         }
     });
+}
+
+
+function addCorsHttpHeaders(httpResponse){
+  httpResponse.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+  httpResponse.setHeader("Access-Control-Allow-Methods","POST,GET,OPTIONS,PUT,DELETE,HEAD");
+  httpResponse.setHeader("Access-Control-Allow-Headers","X-PINGOTHER,Origin,X-Requested-With,Content-Type,Accept");
+  httpResponse.setHeader("Access-Control-Max-Age","1728000");
 }
 
 
