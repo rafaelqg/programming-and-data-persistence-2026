@@ -1,35 +1,121 @@
 <html>
     <head>
+        <script>
+                function carregaDadosJogadores(nomeCampo) {
+
+                    let httpRequest= new XMLHttpRequest();
+                    httpRequest.onreadystatechange = handleRequestJodadores;
+                    httpRequest.open("GET","http://localhost:4333/get_jogadores", true);
+                    httpRequest.send();
+
+                    
+                    function handleRequestJodadores() {
+                        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                            if (httpRequest.status === 200) {
+                                let jogadores = JSON.parse(httpRequest.responseText);
+                                let campoSelect = document.forms[0][nomeCampo];
+                                for (let jogador of jogadores) {
+                                    let option = document.createElement("option");
+                                    option.value = jogador.id;
+                                    option.text = jogador.nome_jogador;
+                                    campoSelect.appendChild(option);
+                                }
+                            } else {
+                                console.error("Erro ao carregar os dados: " + httpRequest.status);
+                            }
+                        }
+                    }
+
+                    
+            }
+
+               function carregaDadosJogos() {
+
+                    let httpRequest= new XMLHttpRequest();
+                    httpRequest.onreadystatechange = handleRequestJodadores;
+                    httpRequest.open("GET","http://localhost:4333/get_jogos", true);
+                    httpRequest.send();
+
+                    function handleRequestJodadores() {
+                        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                            if (httpRequest.status === 200) {
+                                let jogos = JSON.parse(httpRequest.responseText);
+                                let campoSelect = document.forms[0]["jogo"];
+                                for (let jogo of jogos) {
+                                    let option = document.createElement("option");
+                                    option.value = jogo.id;
+                                    option.text = jogo.nome_jogo;
+                                    campoSelect.appendChild(option);
+                                }
+                            } else {
+                                console.error("Erro ao carregar os dados: " + httpRequest.status);
+                            }
+                        }
+                    }
+            }
+
+            function carregaDadosFormatos() {
+
+                    let httpRequest= new XMLHttpRequest();
+                    httpRequest.onreadystatechange = handleRequestFormatos;
+                    httpRequest.open("GET","http://localhost:4333/get_formatos", true);
+                    httpRequest.send();
+
+                    function handleRequestFormatos() {
+                        if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                            if (httpRequest.status === 200) {
+                                let formatos = JSON.parse(httpRequest.responseText);
+                                let campoSelect = document.forms[0]["formato"];
+                                for (let formato of formatos) {
+                                    let option = document.createElement("option");
+                                    option.value = formato.id;
+                                    option.text = formato.descricao;
+                                    campoSelect.appendChild(option);
+                                }
+                            } else {
+                                console.error("Erro ao carregar os dados: " + httpRequest.status);
+                            }
+                        }
+                    }
+            }
+
+
+            function cargaInicial(){
+                carregaDadosJogadores("jogador_1");
+                carregaDadosJogadores("jogador_2");
+                carregaDadosJogos();
+                carregaDadosFormatos();
+            }
+
+        </script>
     </head>
-    <body>
+    <body onload="cargaInicial()">
         <h1>Registro de nova partida</h1>
-        <form>
+        <form method="POST" action="http://localhost:4333/insere_partida">
             Data inicio:<br />
-            <input name="data_inicio" type="date" />
-            <input name="hora_inicio" type="time" />
+            <input name="data_inicio" type="date" required />
+            <input name="hora_inicio" type="time" required />
             <br /><br />
 
             Data fim:<br />
-            <input name="data_fim" type="date" />
-            <input name="hora_fim" type="time" />
+            <input name="data_fim" type="date"  required />
+            <input name="hora_fim" type="time"  required />
             <br /><br />
             
             Jogador 1:<br />
-            <select name="jogador_1">
+            <select name="jogador_1" required>
                 <option value="">
                     --Selecione o Jogador 1 --
                 </option>
-                <option value="1">João</option>
             </select>
             <input type="radio" name="vencedor" value="1"> Vencedor
           
             <br /><br />
             Jogador 2:<br />
-            <select name="jogador_2">
+            <select name="jogador_2" required>
                 <option value="">
                     --Selecione o Jogador 2 --
                 </option>
-                <option value="2">Maria</option>
             </select>
             <input type="radio" name="vencedor" value="2"> Vencedor
 
@@ -41,7 +127,7 @@
 
             <br /><br />
             Formato:<br />
-            <select name="formato">
+            <select name="formato" required>
                 <option value="">--Selecione o formato da partida --</option>
             </select>
             <br /><br />
